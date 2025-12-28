@@ -1,0 +1,38 @@
+{
+  "name": "formcn",
+  "version": "1.0.0",
+  "description": "Schema-driven React form generator using React Hook Form, Zod, and shadcn/ui",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "formcn": "./bin/index.js"
+  },
+  "keywords": [
+    "react",
+    "forms",
+    "typescript",
+    "react-hook-form",
+    "zod",
+    "shadcn",
+    "cli",
+    "generator"
+  ],
+  "author": "Fares Galal",
+  "license": "MIT",
+  "dependencies": {
+    "@clack/prompts": "^0.11.0",
+    "@hookform/resolvers": "^5.2.2",
+    "chalk": "^5.6.2",
+    "chalk-animation": "^2.0.3",
+    "commander": "^14.0.2",
+    "figlet": "^1.9.4",
+    "fs-extra": "^11.3.3",
+    "inquirer": "^13.1.0",
+    "nanospinner": "^1.2.2",
+    "react-hook-form": "^7.69.0",
+    "zod": "^4.2.1"
+  }
+}
