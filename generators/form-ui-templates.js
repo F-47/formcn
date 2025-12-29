@@ -6,7 +6,6 @@ export const INPUT_TEMPLATES = {
       ${f.required ? "required" : ""}
       aria-invalid={fieldState.invalid}
     />`,
-
   select: (
     f
   ) => `<Select value={field.value ?? ""} onValueChange={field.onChange}>
@@ -21,7 +20,6 @@ export const INPUT_TEMPLATES = {
         .join("\n    ")}
     </SelectContent>
   </Select>`,
-
   checkbox: (f) => `<FieldGroup data-slot="checkbox-group">
   <Field orientation="horizontal">
     <Checkbox
@@ -36,7 +34,6 @@ export const INPUT_TEMPLATES = {
     </FieldLabel>
   </Field>
   </FieldGroup>`,
-
   radio: (
     f
   ) => `<RadioGroup  value={field.value ?? ""} onValueChange={(val) => field.onChange(val === "" ? undefined : val)}>
@@ -49,7 +46,35 @@ export const INPUT_TEMPLATES = {
       )
       .join("\n  ")}
   </RadioGroup>`,
-
+  choiceCard: (f) => `<FieldGroup>
+  <FieldSet>
+    <RadioGroup
+      value={field.value ?? ""}
+      onValueChange={(val) =>
+        field.onChange(val === "" ? undefined : val)
+      }
+    >
+      ${f.options
+        .map(
+          (opt) => `<FieldLabel htmlFor="${f.name}-${opt.value}">
+        <Field orientation="horizontal">
+          <FieldContent>
+            <FieldTitle>${opt.label}</FieldTitle>
+            <FieldDescription>
+              ${opt.description ?? ""}
+            </FieldDescription>
+          </FieldContent>
+          <RadioGroupItem
+            value="${opt.value}"
+            id="${f.name}-${opt.value}"
+          />
+        </Field>
+      </FieldLabel>`
+        )
+        .join("\n      ")}
+    </RadioGroup>
+  </FieldSet>
+</FieldGroup>`,
   number: (f) => `<Input
     id="${f.name}"
     type="number"
@@ -61,7 +86,6 @@ export const INPUT_TEMPLATES = {
     onBlur={field.onBlur}
     ref={field.ref}
   />`,
-
   default: (f) => {
     const type = ["text", "email", "password", "date"].includes(f.type)
       ? f.type
@@ -94,6 +118,18 @@ export const COMPONENT_USAGE_MAP = {
   },
   checkbox: { Checkbox: true },
   radio: { RadioGroup: true, RadioGroupItem: true },
+  choiceCard: {
+    RadioGroup: true,
+    RadioGroupItem: true,
+    Field: true,
+    FieldLabel: true,
+    FieldGroup: true,
+    FieldSet: true,
+    FieldContent: true,
+    FieldTitle: true,
+    FieldDescription: true,
+  },
+
   default: { Input: true },
 };
 
@@ -122,15 +158,22 @@ export function generateImports(uses = {}, mode = "single") {
     Select: `import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";`,
     Checkbox: `import { Checkbox } from "@/components/ui/checkbox";`,
     RadioGroup: `import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";`,
+    Field: `import {
+      Field,
+      FieldLabel,
+      FieldError,
+      FieldGroup,
+      FieldSet,
+      FieldContent,
+      FieldTitle,
+      FieldDescription,
+    } from "@/components/ui/field";`,
   };
 
   if (mode === "single") {
     importSet.add(`import { useForm, Controller } from "react-hook-form";`);
     importSet.add(`import { Button } from "@/components/ui/button";`);
     importSet.add(`import { zodResolver } from "@hookform/resolvers/zod";`);
-    importSet.add(
-      `import { Field, FieldLabel, FieldError, FieldGroup } from "@/components/ui/field";`
-    );
 
     Object.entries(uses).forEach(([component, used]) => {
       if (used && componentImports[component])
@@ -166,7 +209,8 @@ export function getDefaultValue(field) {
   if (
     field.type === "number" ||
     field.type === "select" ||
-    field.type === "radio"
+    field.type === "radio" ||
+    field.type === "choice-card"
   )
     return `${field.name}: undefined`;
   return `${field.name}: ""`;

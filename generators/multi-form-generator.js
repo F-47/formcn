@@ -14,34 +14,14 @@ import {
 } from "./form-ui-templates.js";
 import { generateZodSchema } from "./schema-generator.js";
 import { multiFormPresets } from "../utils/tailwind-presets.js";
-import { confirm, isCancel } from "@clack/prompts";
+import { prepareFormDir } from "../utils/prepareFormDir.js";
 
 export async function generateMultiForm({ formName, steps, presetKey }) {
   if (!Array.isArray(steps)) {
     throw new Error("steps must be an array");
   }
 
-  const baseDir = fs.existsSync(path.resolve("src"))
-    ? path.resolve("src/components/forms")
-    : path.resolve("components/forms");
-
-  const formDir = path.join(baseDir, formName);
-
-  const exists = await fs.pathExists(formDir);
-
-  if (exists) {
-    const overwrite = await confirm({
-      message: `Form "${formName}" already exists. Overwrite it?`,
-      initialValue: false,
-    });
-
-    if (isCancel(overwrite) || !overwrite) {
-      console.log("❌ Operation cancelled.");
-      process.exit(0);
-    }
-
-    await fs.remove(formDir);
-  }
+  const formDir = await prepareFormDir(formName);
 
   try {
     await fs.ensureDir(formDir);

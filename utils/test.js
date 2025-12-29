@@ -2,7 +2,7 @@ export const FAST_MODE = false;
 
 export const FAST_FORMS = [
   {
-    formName: "testSingleAllTypes",
+    formName: "testSingle",
     type: "single",
     presetKey: "default",
     steps: [
@@ -61,10 +61,8 @@ export const FAST_FORMS = [
       },
     ],
   },
-
-  // Multi-step form with all types split across steps
   {
-    formName: "test",
+    formName: "testMulti",
     type: "multi",
     presetKey: "minimal", // stepperTop | minimal | sidebarStepper | softType
     steps: [

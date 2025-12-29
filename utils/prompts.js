@@ -1,6 +1,7 @@
 import fs from "fs-extra";
 import path from "path";
 import { select, text, confirm, isCancel } from "@clack/prompts";
+import { handleCancel } from "./cancel.js";
 
 export async function askFormName() {
   const baseDir = fs.existsSync(path.resolve("src"))
@@ -24,14 +25,11 @@ export async function askFormName() {
       }
     },
   });
-
-  if (isCancel(formName)) {
-    console.log("❌ Operation cancelled.");
-    process.exit(0);
-  }
+  handleCancel(formName);
 
   return formName;
 }
+
 export async function askFormType() {
   const result = await select({
     message: "Form type?",
@@ -40,11 +38,8 @@ export async function askFormType() {
       { value: "multi", label: "Multi step" },
     ],
   });
+  handleCancel(result);
 
-  if (isCancel(result)) {
-    console.log("❌ Operation cancelled.");
-    process.exit(0);
-  }
   return result;
 }
 
@@ -56,11 +51,7 @@ export async function askFormTemplate(formType) {
       { value: "manual", label: "Create manually" },
     ],
   });
-
-  if (isCancel(choice)) {
-    console.log("❌ Operation cancelled.");
-    process.exit(0);
-  }
+  handleCancel(choice);
 
   return choice;
 }
@@ -75,6 +66,7 @@ const FIELD_TYPES = [
   { value: "select", label: "Select" },
   { value: "checkbox", label: "Checkbox" },
   { value: "radio", label: "Radio" },
+  { value: "choiceCard", label: "Choice card (radio cards)" },
   { value: "date", label: "Date" },
 ];
 
@@ -86,10 +78,7 @@ export async function askFields() {
       message: "Field type?",
       options: FIELD_TYPES,
     });
-    if (isCancel(type)) {
-      console.log("❌ Operation cancelled.");
-      process.exit(0);
-    }
+    handleCancel(type);
 
     const label = await text({
       message: 'Label (e.g. "First Name" → "first_name" as field name)',
@@ -97,22 +86,16 @@ export async function askFields() {
         if (!value.trim()) return "Label cannot be empty.";
       },
     });
-    if (isCancel(label)) {
-      console.log("❌ Operation cancelled.");
-      process.exit(0);
-    }
+    handleCancel(label);
 
     const name = label.trim().toLowerCase().replace(/\s+/g, "_");
 
     const required = await confirm({ message: "Required?" });
-    if (isCancel(required)) {
-      console.log("❌ Operation cancelled.");
-      process.exit(0);
-    }
+    handleCancel(required);
 
     let options;
 
-    if (type === "select" || type === "radio") {
+    if (type === "select" || type === "radio" || type === "choiceCard") {
       options = [];
 
       while (true) {
@@ -125,10 +108,8 @@ export async function askFields() {
               return `Option "${transformed}" already exists.`;
           },
         });
-        if (isCancel(labelInput)) {
-          console.log("❌ Operation cancelled.");
-          process.exit(0);
-        }
+
+        handleCancel(labelInput);
 
         const label = labelInput
           .split(" ")
@@ -169,10 +150,8 @@ export async function askSteps() {
         if (!value.trim()) return "Step Name cannot be empty.";
       },
     });
-    if (isCancel(stepName)) {
-      console.log("❌ Operation cancelled.");
-      process.exit(0);
-    }
+
+    handleCancel(stepName);
 
     console.log(`\nAdd fields for step: ${stepName}\n`);
     const fields = await askFields();
