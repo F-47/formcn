@@ -75,6 +75,19 @@ export const INPUT_TEMPLATES = {
     </RadioGroup>
   </FieldSet>
 </FieldGroup>`,
+  switch: (f) => `<FieldGroup>
+  <Field orientation="horizontal">
+    <Switch
+      id="${f.name}"
+      checked={field.value}
+      onCheckedChange={field.onChange}
+      ${f.required ? "required" : ""}
+    />
+    <FieldLabel htmlFor="${f.name}" className="font-normal">
+      ${f.label}
+    </FieldLabel>
+  </Field>
+</FieldGroup>`,
   number: (f) => `<Input
     id="${f.name}"
     type="number"
@@ -129,6 +142,9 @@ export const COMPONENT_USAGE_MAP = {
     FieldTitle: true,
     FieldDescription: true,
   },
+  switch: {
+    Switch: true,
+  },
 
   default: { Input: true },
 };
@@ -154,7 +170,7 @@ export function generateImports(uses = {}, mode = "single") {
 
   const componentImports = {
     Input: `import { Input } from "@/components/ui/input";`,
-    Textarea: `import { Textarea } from "@/components/ui/textarea";`, // <--- add this
+    Textarea: `import { Textarea } from "@/components/ui/textarea";`,
     Select: `import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";`,
     Checkbox: `import { Checkbox } from "@/components/ui/checkbox";`,
     RadioGroup: `import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";`,
@@ -168,12 +184,16 @@ export function generateImports(uses = {}, mode = "single") {
       FieldTitle,
       FieldDescription,
     } from "@/components/ui/field";`,
+    Switch: `import { Switch } from "@/components/ui/switch";`,
   };
 
   if (mode === "single") {
     importSet.add(`import { useForm, Controller } from "react-hook-form";`);
     importSet.add(`import { Button } from "@/components/ui/button";`);
     importSet.add(`import { zodResolver } from "@hookform/resolvers/zod";`);
+    importSet.add(
+      `import { Field, FieldLabel, FieldError, FieldGroup } from "@/components/ui/field";`
+    );
 
     Object.entries(uses).forEach(([component, used]) => {
       if (used && componentImports[component])
@@ -205,12 +225,12 @@ export function generateImports(uses = {}, mode = "single") {
 }
 
 export function getDefaultValue(field) {
-  if (field.type === "checkbox") return `${field.name}: false`;
+  if (field.type === "checkbox" || field.type === "switch")
+    return `${field.name}: false`;
   if (
     field.type === "number" ||
     field.type === "select" ||
-    field.type === "radio" ||
-    field.type === "choice-card"
+    field.type === "choiceCard"
   )
     return `${field.name}: undefined`;
   return `${field.name}: ""`;

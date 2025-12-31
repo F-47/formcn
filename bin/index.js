@@ -20,6 +20,7 @@ import {
   MULTI_STEP_TEMPLATES,
 } from "../utils/templates.js";
 import { ensurePackages } from "../utils/ensurePackages.js";
+import { toCapitalizedLabel } from "../utils/lib.js";
 
 intro("formcn");
 
@@ -33,28 +34,31 @@ const formTemplateChoice = await askFormTemplate(formType);
 let presetKey;
 
 if (formTemplateChoice === "template") {
-  if (formType === "single") {
-    const templateKeys = Object.keys(SINGLE_FIELD_TEMPLATES);
-    const templateChoice = await select({
-      message: "Choose a template:",
-      options: templateKeys.map((key) => ({ value: key, label: key })),
-    });
-    presetKey = await askFormPreset(singleFormPresets);
+  const isSingle = formType === "single";
+  const templates = isSingle ? SINGLE_FIELD_TEMPLATES : MULTI_STEP_TEMPLATES;
+  const presets = isSingle ? singleFormPresets : multiFormPresets;
+
+  const templateKeys = Object.keys(templates);
+  const templateChoice = await select({
+    message: `Choose a ${isSingle ? "single" : "multi-step"} template:`,
+    options: templateKeys.map((key) => ({
+      value: key,
+      label: toCapitalizedLabel(key),
+    })),
+  });
+
+  presetKey = await askFormPreset(presets);
+
+  if (isSingle) {
     await generateSingleForm({
       formName,
-      fields: SINGLE_FIELD_TEMPLATES[templateChoice],
+      fields: templates[templateChoice],
       presetKey,
     });
   } else {
-    const templateKeys = Object.keys(MULTI_STEP_TEMPLATES);
-    const templateChoice = await select({
-      message: "Choose a template:",
-      options: templateKeys.map((key) => ({ value: key, label: key })),
-    });
-    presetKey = await askFormPreset(multiFormPresets);
     await generateMultiForm({
       formName,
-      steps: MULTI_STEP_TEMPLATES[templateChoice],
+      steps: templates[templateChoice],
       presetKey,
     });
   }

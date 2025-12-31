@@ -8,48 +8,56 @@ export function generateZodSchema(fields, schemaName = "schema") {
       f.required
         ? `z.email("Invalid email")`
         : `z.email("Invalid email").optional().or(z.literal(""))`,
-
     password: (f) =>
       f.required
         ? `z.string().min(8, "Password must be at least 8 characters")`
         : `z.string().min(8).optional()`,
-
     number: (f) =>
       f.required
         ? `z.number({ error: "${getLabel(f)} is required" })`
         : `z.number().optional()`,
-
     phone: (f) =>
       f.required
         ? `z.coerce.number({ error: "${getLabel(f)} is required" })`
         : `z.coerce.number().optional()`,
-
     checkbox: (f) =>
       f.required
         ? `z.boolean().refine(val => val === true, "${getLabel(
             f
           )} must be checked")`
         : `z.boolean().optional()`,
-
     date: (f) =>
       f.required
         ? `z.string().min(1, "${getLabel(f)} is required")`
         : `z.string().optional()`,
-
     select: (f) => {
+      if (!Array.isArray(f.options) || f.options.length === 0) {
+        return f.required
+          ? `z.string().min(1, "${getLabel(f)} is required")`
+          : `z.string().optional()`;
+      }
       const options = f.options
         .map((o) => `z.literal("${o.value}")`)
         .join(", ");
+
       return f.required
         ? `z.union([${options}], { error: "Please select ${getLabel(f)}" })`
         : `z.union([${options}]).optional()`;
     },
-
     url: (f) =>
       f.required
         ? `z.url("Invalid URL")`
         : `z.url("Invalid URL").optional().or(z.literal(""))`,
-
+    switch: (f) =>
+      f.required
+        ? `z.boolean().refine(val => val === true, "${getLabel(
+            f
+          )} must be enabled")`
+        : `z.boolean().optional()`,
+    choiceCard: (f) =>
+      f.required
+        ? `z.string().min(1, "${getLabel(f)} is required")`
+        : `z.string().optional()`,
     default: (f) =>
       f.required
         ? `z.string().min(1, "${getLabel(f)} is required")`
@@ -67,10 +75,10 @@ export function generateZodSchema(fields, schemaName = "schema") {
     .filter((f) => f.isConfirmation)
     .map(
       (f) => `
-  .refine((data) => data.${f.confirmationFor} === data.${f.name}, {
-    message: "Passwords do not match",
-    path: ["${f.name}"],
-  })`
+      .refine((data) => data.${f.confirmationFor} === data.${f.name}, {
+        message: "Passwords do not match",
+        path: ["${f.name}"],
+      })`
     )
     .join("");
 

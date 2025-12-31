@@ -20,3 +20,10 @@ export function toKebabCaseForm(str) {
     .replace(/[\s_]+/g, "-")
     .toLowerCase();
 }
+
+export function toCapitalizedLabel(name) {
+  return name
+    .replace(/[-_]/g, " ")
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}

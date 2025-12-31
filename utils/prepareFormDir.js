@@ -1,6 +1,6 @@
+import { confirm } from "@clack/prompts";
 import fs from "fs-extra";
 import path from "path";
-import { confirm, isCancel } from "@clack/prompts";
 
 export async function prepareFormDir(formName) {
   const baseDir = fs.existsSync(path.resolve("src"))

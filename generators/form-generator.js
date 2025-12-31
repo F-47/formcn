@@ -35,14 +35,25 @@ function generateFormComponent(formName, fields, presetKey) {
   const preset = singleFormPresets[presetKey];
   if (!preset) throw new Error(`Single form preset "${presetKey}" not found`);
 
-  const renderControllerContent = (f) => `
+  const renderControllerContent = (f) => {
+    if (["radio", "choiceCard"].includes(f.type)) {
+      return `
+      <FieldSet data-invalid={fieldState.invalid}>
+        <FieldLegend>${f.label}${f.required ? " *" : ""}</FieldLegend>
+        ${renderInputByType(f)}
+        ${renderError()}
+      </FieldSet>
+    `;
+    }
+
+    return `
     <FieldLabel htmlFor="${f.name}">${f.label}${
-    f.required ? ' <span className="text-red-500">*</span>' : ""
-  }
-</FieldLabel>
+      f.required ? ' <span className="text-red-500">*</span>' : ""
+    }</FieldLabel>
     ${renderInputByType(f)}
     ${renderError()}
   `;
+  };
 
   const renderFields = fields
     .map((f) => {

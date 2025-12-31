@@ -2,6 +2,8 @@ import fs from "fs-extra";
 import path from "path";
 import { select, text, confirm, isCancel } from "@clack/prompts";
 import { handleCancel } from "./cancel.js";
+import { FIELD_TYPES } from "./fields.js";
+import { toCapitalizedLabel } from "./lib.js";
 
 export async function askFormName() {
   const baseDir = fs.existsSync(path.resolve("src"))
@@ -56,20 +58,6 @@ export async function askFormTemplate(formType) {
   return choice;
 }
 
-const FIELD_TYPES = [
-  { value: "text", label: "Text" },
-  { value: "email", label: "Email" },
-  { value: "password", label: "Password" },
-  { value: "number", label: "Number" },
-  { value: "url", label: "URL" },
-  { value: "textarea", label: "Textarea" },
-  { value: "select", label: "Select" },
-  { value: "checkbox", label: "Checkbox" },
-  { value: "radio", label: "Radio" },
-  { value: "choiceCard", label: "Choice card (radio cards)" },
-  { value: "date", label: "Date" },
-];
-
 export async function askFields() {
   const fields = [];
 
@@ -108,9 +96,7 @@ export async function askFields() {
               return `Option "${transformed}" already exists.`;
           },
         });
-
         handleCancel(labelInput);
-
         const label = labelInput
           .split(" ")
           .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
@@ -168,12 +154,13 @@ export async function askSteps() {
 export async function askFormPreset(presets) {
   const choices = Object.keys(presets).map((key) => ({
     value: key,
-    label: key,
+    label: toCapitalizedLabel(key),
   }));
   const preset = await select({
     message: "Choose a form preset:",
     options: choices,
   });
+  handleCancel(preset);
 
   return preset;
 }
