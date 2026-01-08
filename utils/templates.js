@@ -49,7 +49,6 @@ export const MULTI_STEP_TEMPLATES = {
           options: [
             { label: "Male", value: "male" },
             { label: "Female", value: "female" },
-            { label: "Other", value: "other" },
           ],
         },
         { name: "birthdate", type: "date", label: "Birthdate", required: true },
