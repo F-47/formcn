@@ -49,6 +49,7 @@ export const MULTI_STEP_TEMPLATES = {
           options: [
             { label: "Male", value: "male" },
             { label: "Female", value: "female" },
+            { label: "Other", value: "other" },
           ],
         },
         { name: "birthdate", type: "date", label: "Birthdate", required: true },
@@ -96,6 +97,84 @@ export const MULTI_STEP_TEMPLATES = {
             { label: "United Kingdom", value: "uk" },
           ],
         },
+      ],
+    },
+  ],
+  survey: [
+    {
+      stepName: "General Questions",
+      fields: [
+        {
+          name: "satisfaction",
+          type: "radio",
+          label: "How satisfied are you?",
+          options: [
+            { label: "Very satisfied", value: "5" },
+            { label: "Satisfied", value: "4" },
+            { label: "Neutral", value: "3" },
+            { label: "Dissatisfied", value: "2" },
+          ],
+        },
+      ],
+    },
+    {
+      stepName: "Feedback",
+      fields: [
+        {
+          name: "comments",
+          type: "textarea",
+          label: "Additional comments",
+        },
+      ],
+    },
+  ],
+  jobApplication: [
+    {
+      stepName: "Personal Information",
+      fields: [
+        { name: "full_name", type: "text", label: "Full Name", required: true },
+        { name: "email", type: "email", label: "Email", required: true },
+        { name: "phone", type: "number", label: "Phone", required: true },
+      ],
+    },
+    {
+      stepName: "Professional Details",
+      fields: [
+        {
+          name: "position",
+          type: "text",
+          label: "Position Applied For",
+          required: true,
+        },
+        {
+          name: "experience",
+          type: "number",
+          label: "Years of Experience",
+          required: true,
+        },
+        {
+          name: "employment_type",
+          type: "radio",
+          label: "Employment Type",
+          required: true,
+          options: [
+            { label: "Full-time", value: "full_time" },
+            { label: "Part-time", value: "part_time" },
+            { label: "Freelance", value: "freelance" },
+          ],
+        },
+      ],
+    },
+    {
+      stepName: "Additional Info",
+      fields: [
+        {
+          name: "portfolio",
+          type: "text",
+          label: "Portfolio URL",
+          required: false,
+        },
+        { name: "cover_letter", type: "textarea", label: "Cover Letter" },
       ],
     },
   ],

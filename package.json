@@ -1,6 +1,6 @@
 {
   "name": "formcn",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Schema-driven React form generator using React Hook Form, Zod, and shadcn/ui",
   "main": "index.js",
   "type": "module",
